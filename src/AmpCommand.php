@@ -18,11 +18,14 @@
 namespace Lullabot\AMP;
 
 use Http\Discovery\HttpClientDiscovery;
+use Psr\Http\Client\ClientInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class AmpCommand extends Command
 {
@@ -78,7 +81,11 @@ class AmpCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $amp = new AMP();
+        $container = new Container();
+        $container->set(ClientInterface::class, HttpClientDiscovery::find());
+        $container->compile();
+        $amp = new AMP(null, $container);
+
         $options_filename = $input->getOption('options');
         $options = [];
         if (!empty($options_filename)) {

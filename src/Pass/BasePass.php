@@ -24,6 +24,7 @@ use Lullabot\AMP\Validate\ParsedTagSpec;
 use Lullabot\AMP\Validate\ParsedValidatorRules;
 use Lullabot\AMP\Validate\Scope;
 use Lullabot\AMP\Validate\SValidationResult;
+use Psr\Container\ContainerInterface;
 use QueryPath\DOMQuery;
 use Lullabot\AMP\Utility\ActionTakenLine;
 use Lullabot\AMP\Validate\Context;
@@ -46,6 +47,8 @@ abstract class BasePass
     protected $validation_result;
     /** @var  GroupedValidationResult */
     protected $grouped_validation_result;
+    /** @var ContainerInterface */
+    private $container;
 
     /**
      * FixBasePass constructor.
@@ -278,5 +281,22 @@ abstract class BasePass
         if ($curr_layout === AmpLayoutLayout::UNKNOWN) {
             $el->attr('layout', $layout);
         }
+    }
+
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * @return ContainerInterface
+     */
+    public function getContainer()
+    {
+        if (null === $this->container) {
+            throw new \RuntimeException('Container is not set.');
+        }
+
+        return $this->container;
     }
 }
