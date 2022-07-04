@@ -21,7 +21,8 @@
         "psr/http-client-implementation": "^1.0",
         "php-http/httplug": "^2.0",
         "php-http/message-factory": "^1.0",
-        "php-http/discovery": "^1.0"
+        "php-http/discovery": "^1.0",
+        "psr/container": "^1.0 || ^2.0"
     },
     "autoload": {
         "classmap": ["src/Spec/validator-generated.php"],
@@ -33,7 +34,8 @@
         "symfony/console": "^2.7.0",
         "php-http/guzzle6-adapter": "^2.0",
         "php-http/message": "^1.13",
-        "nyholm/psr7": "^1.5"
+        "nyholm/psr7": "^1.5",
+        "symfony/dependency-injection": "^5.4"
     },
     "scripts": {
         "test": "phpunit tests"

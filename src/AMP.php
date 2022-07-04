@@ -18,10 +18,11 @@
 namespace Lullabot\AMP;
 
 use Http\Discovery\HttpClientDiscovery;
-use Lullabot\AMP\Pass\HttpClientAwarePass;
+use Lullabot\AMP\Pass\ContainerAwarePass;
 use Lullabot\AMP\Spec\ValidationErrorCode;
 use Lullabot\AMP\Utility\AMPHTML5;
 use Lullabot\AMP\Validate\GroupedValidationResult;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use QueryPath;
 use SebastianBergmann\Diff\Differ;
@@ -100,8 +101,8 @@ class AMP
     protected $component_js = [];
     /** @var array */
     protected $options;
-    /** @var ClientInterface */
-    private $httpClient;
+    /** @var ContainerInterface */
+    private $container;
 
     public function getComponentJs()
     {
@@ -137,7 +138,7 @@ class AMP
      *
      * @see src/Spec/validator-generated.php
      */
-    public function __construct(ParsedValidatorRules $parsed_rules = NULL, ClientInterface $httpClient = null)
+    public function __construct(ParsedValidatorRules $parsed_rules = NULL, ContainerInterface $container = null)
     {
         $this->parsed_rules = $parsed_rules;
         if (empty($this->parsed_rules)) {
@@ -148,7 +149,7 @@ class AMP
         }
         /** @var ValidatorRules rules */
         $this->rules = $this->parsed_rules->rules;
-        $this->httpClient = $httpClient ?: HttpClientDiscovery::find();
+        $this->container = $container;
     }
 
     /**
@@ -464,9 +465,7 @@ class AMP
             // Each of the $qp objects are pointing to the same DOMDocument
             /** @var BasePass $pass */
             $pass = (new $pass_name($qp_branch, $this->context, $this->validation_result, $this->grouped_validation_result, $this->parsed_rules, $this->options));
-            if ($pass instanceof HttpClientAwarePass) {
-                $pass->setHttpClient($this->httpClient);
-            }
+            $pass->setContainer($this->container);
 
             // Run the pass
             $pass->pass();
